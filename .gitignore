@@ -1,0 +1,36 @@
+# Binaries
+/tmp/*
+*.exe
+*.test
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config with secrets
+.env
+
+# Vendor (managed by go mod vendor)
+# vendor/
+
+# Logs
+logs/
+
+# Data directories
+/records/
+/scenarios/
+/resources/
+
+# Build outputs
+/bin/
+/gateway
+.claude/
+/vendor/
+/offline-deploy/images/

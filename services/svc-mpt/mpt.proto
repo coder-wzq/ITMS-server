@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package mpt;
+
+option go_package = "itms-server/services/svc-mpt/proto";
+
+service Mpt {
+    // TODO: add gRPC methods
+}

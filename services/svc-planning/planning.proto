@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package planning;
+
+option go_package = "itms-server/services/svc-planning/proto";
+
+service Planning {
+    // TODO: add gRPC methods
+}

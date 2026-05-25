@@ -1,0 +1,105 @@
+# ITMS Docker Compose Orchestration
+# Dependency chain: etcd → postgres → redis → microservices → nginx
+
+version: "3.9"
+
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.17
+    container_name: itms-etcd
+    environment:
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    volumes:
+      - etcd_data:/etcd-data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: itms-postgres
+    environment:
+      POSTGRES_DB: ${PG_DB:-itms}
+      POSTGRES_USER: ${PG_USER:-itms}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-itms@2026}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-itms} -d ${PG_DB:-itms}"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: itms-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-itms@2026}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-itms@2026}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    container_name: itms-gateway
+    environment:
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: ${PG_USER:-itms}
+      PG_PASSWORD: ${PG_PASSWORD:-itms@2026}
+      PG_DBNAME: ${PG_DB:-itms}
+      REDIS_ADDR: redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-itms@2026}
+      ETCD_ENDPOINTS: etcd:2379
+      JWT_SECRET: ${JWT_SECRET:-itms-jwt-secret-min-32-chars!!}
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      etcd:
+        condition: service_started
+    volumes:
+      - logs:/app/logs
+      - records:/app/records
+      - scenarios:/app/scenarios
+      - resources:/app/resources
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: itms-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
+volumes:
+  etcd_data:
+  pg_data:
+  redis_data:
+  logs:
+  records:
+  scenarios:
+  resources:

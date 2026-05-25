@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package task;
+
+option go_package = "itms-server/services/svc-task/proto";
+
+service Task {
+    // TODO: add gRPC methods
+}

@@ -1,0 +1,8 @@
+syntax = "v1"
+
+info(
+    title: "svc-situation API"
+    desc: "svc-situation microservice HTTP API definition"
+    author: "ITMS Team"
+    version: "v1.0"
+)

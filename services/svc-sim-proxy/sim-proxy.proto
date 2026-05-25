@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package sim-proxy;
+
+option go_package = "itms-server/services/svc-sim-proxy/proto";
+
+service Sim-proxy {
+    // TODO: add gRPC methods
+}

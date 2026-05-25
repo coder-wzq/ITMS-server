@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package director;
+
+option go_package = "itms-server/services/svc-director/proto";
+
+service Director {
+    // TODO: add gRPC methods
+}

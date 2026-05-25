@@ -1,0 +1,59 @@
+app:
+  name: svc-user
+  host: 0.0.0.0
+  port: 9091
+
+postgres:
+  host: localhost
+  port: 5432
+  user: itms
+  password: "itms@2026"
+  dbName: itms
+  sslMode: disable
+  maxOpenConn: 100
+  maxIdleConn: 25
+  maxLifetimeMin: 5
+  logLevel: 3
+
+redis:
+  addr: localhost:6379
+  password: "itms@2026"
+  db: 0
+  poolSize: 50
+
+jwt:
+  secret: "itms-jwt-secret-min-32-chars!!"
+  accessTokenTTL: 120
+  refreshTokenTTL: 168
+
+etcd:
+  endpoints:
+    - localhost:2379
+  ttl: 10
+
+log:
+  level: info
+  file: logs/svc-user.log
+  mode: console
+
+cors:
+  allowedOrigins:
+    - "*"
+  allowedMethods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+  allowedHeaders:
+    - Authorization
+    - Content-Type
+  maxAge: 3600
+
+rateLimit:
+  rate: 100
+  burst: 200
+
+gateway:
+  httpPort: 0
+  grpcPort: 0
+  timeout: 3000

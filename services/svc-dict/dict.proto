@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package dict;
+
+option go_package = "itms-server/services/svc-dict/proto";
+
+service Dict {
+    // TODO: add gRPC methods
+}

@@ -1,0 +1,8 @@
+syntax = "v1"
+
+info(
+    title: "svc-planning API"
+    desc: "svc-planning microservice HTTP API definition"
+    author: "ITMS Team"
+    version: "v1.0"
+)

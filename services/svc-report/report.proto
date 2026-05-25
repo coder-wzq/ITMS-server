@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package report;
+
+option go_package = "itms-server/services/svc-report/proto";
+
+service Report {
+    // TODO: add gRPC methods
+}

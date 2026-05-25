@@ -1,0 +1,77 @@
+Name: itms-gateway
+Host: 0.0.0.0
+Port: 8080
+Timeout: 3000
+MaxConns: 10000
+
+jwt:
+  secret: "itms-jwt-secret-key-must-be-at-least-32-chars!"
+  accessTokenTTL: 120
+  refreshTokenTTL: 168
+
+cors:
+  allowedOrigins:
+    - "*"
+  allowedMethods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    - OPTIONS
+  allowedHeaders:
+    - Authorization
+    - Content-Type
+    - X-Request-ID
+  maxAge: 3600
+
+rateLimit:
+  rate: 100
+  burst: 200
+
+# Global etcd for service discovery
+etcd:
+  endpoints:
+    - localhost:2379
+  ttl: 10
+
+Upstreams:
+  - Name: svc-user
+    Grpc:
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: svc-user
+    ProtoSets:
+      - api/proto/user/user.pb
+    Mappings:
+      - Method: GET
+        Path: /api/users
+        RpcPath: user.UserService/ListUsers
+      - Method: POST
+        Path: /api/users
+        RpcPath: user.UserService/CreateUser
+      - Method: PUT
+        Path: /api/users/:id
+        RpcPath: user.UserService/UpdateUser
+      - Method: DELETE
+        Path: /api/users/:id
+        RpcPath: user.UserService/DeleteUser
+      - Method: POST
+        Path: /api/users/batch-delete
+        RpcPath: user.UserService/BatchDeleteUsers
+      - Method: GET
+        Path: /api/users/profile
+        RpcPath: user.UserService/GetProfile
+      - Method: PUT
+        Path: /api/users/profile
+        RpcPath: user.UserService/UpdateProfile
+      - Method: GET
+        Path: /api/organizations/tree
+        RpcPath: user.UserService/GetOrgTree
+      - Method: POST
+        Path: /api/organizations
+        RpcPath: user.UserService/CreateOrganization
+      - Method: DELETE
+        Path: /api/organizations/:id
+        RpcPath: user.UserService/DeleteOrganization

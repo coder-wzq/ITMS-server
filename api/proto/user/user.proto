@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "itms-server/api/proto/user";
+
+// ---------------------------------------------------------------------------
+// UserService — CSCI-02 user / profile / organization management
+// ---------------------------------------------------------------------------
+
+service UserService {
+  // ---- user CRUD ----
+  rpc ListUsers(ListUsersReq) returns (ListUsersResp);
+  rpc CreateUser(CreateUserReq) returns (CreateUserResp);
+  rpc UpdateUser(UpdateUserReq) returns (UpdateUserResp);
+  rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
+  rpc BatchDeleteUsers(BatchDeleteUsersReq) returns (BatchDeleteUsersResp);
+
+  // ---- profile ----
+  rpc GetProfile(GetProfileReq) returns (GetProfileResp);
+  rpc UpdateProfile(UpdateProfileReq) returns (UpdateProfileResp);
+
+  // ---- organization ----
+  rpc GetOrgTree(GetOrgTreeReq) returns (GetOrgTreeResp);
+  rpc CreateOrganization(CreateOrganizationReq) returns (CreateOrganizationResp);
+  rpc DeleteOrganization(DeleteOrganizationReq) returns (DeleteOrganizationResp);
+}
+
+// ===========================================================================
+// Shared primitives
+// ===========================================================================
+
+message PageInfo {
+  int32 page = 1;
+  int32 page_size = 2;
+  int64 total = 3;
+}
+
+// ===========================================================================
+// User messages
+// ===========================================================================
+
+message ListUsersReq {
+  int32 page = 1;
+  int32 page_size = 2;
+  string keyword = 3;
+}
+
+message UserItem {
+  int64 id = 1;
+  string username = 2;
+  string real_name = 3;
+  string department = 4;
+  string role = 5;
+  int32 status = 6;
+  string last_login = 7;
+}
+
+message ListUsersResp {
+  repeated UserItem list = 1;
+  PageInfo page_info = 2;
+}
+
+message CreateUserReq {
+  string username = 1;
+  string password = 2;
+  string real_name = 3;
+  string department = 4;
+  string role = 5;
+  int64 operator_id = 6;
+}
+
+message CreateUserResp {
+  int64 id = 1;
+  string username = 2;
+}
+
+message UpdateUserReq {
+  int64 id = 1;
+  string password = 2;
+  string real_name = 3;
+  string department = 4;
+  string role = 5;
+  optional int32 status = 6;
+  int64 operator_id = 7;
+  repeated string operator_roles = 8;
+}
+
+message UpdateUserResp {}
+
+message DeleteUserReq {
+  repeated int64 ids = 1;
+  int64 operator_id = 2;
+}
+
+message DeleteUserResp {
+  int32 deleted_count = 1;
+}
+
+message BatchDeleteUsersReq {
+  repeated int64 ids = 1;
+  int64 operator_id = 2;
+}
+
+message BatchDeleteUsersResp {
+  int32 deleted_count = 1;
+}
+
+// ===========================================================================
+// Profile messages
+// ===========================================================================
+
+message GetProfileReq {
+  int64 user_id = 1;
+}
+
+message GetProfileResp {
+  int64 id = 1;
+  string username = 2;
+  string real_name = 3;
+  string department = 4;
+  string phone = 5;
+  string email = 6;
+  string avatar = 7;
+  string role = 8;
+}
+
+message UpdateProfileReq {
+  int64 user_id = 1;
+  string department = 2;
+  string phone = 3;
+  string email = 4;
+  string avatar = 5;
+}
+
+message UpdateProfileResp {}
+
+// ===========================================================================
+// Organization messages
+// ===========================================================================
+
+message GetOrgTreeReq {}
+
+message OrgTreeNode {
+  int64 id = 1;
+  string name = 2;
+  string type = 3;
+  int32 sort_order = 4;
+  int64 parent_id = 5;
+  repeated OrgTreeNode children = 6;
+}
+
+message GetOrgTreeResp {
+  repeated OrgTreeNode nodes = 1;
+}
+
+message CreateOrganizationReq {
+  string name = 1;
+  int64 parent_id = 2;
+  string type = 3;
+  int32 sort_order = 4;
+  int64 operator_id = 5;
+}
+
+message CreateOrganizationResp {
+  int64 id = 1;
+  string name = 2;
+}
+
+message DeleteOrganizationReq {
+  int64 id = 1;
+  int64 operator_id = 2;
+}
+
+message DeleteOrganizationResp {}
