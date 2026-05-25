@@ -33,5 +33,4 @@ logs/
 /bin/
 /gateway
 .claude/
-/vendor/
 /offline-deploy/images/
