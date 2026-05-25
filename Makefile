@@ -6,9 +6,13 @@ GOFLAGS := -v
 
 .PHONY: all build run test lint clean migrate-up migrate-down proto
 
+BUILD_DIR := build
+
 # Build all services
 build:
-	$(GO) build $(GOFLAGS) -o bin/$(APP_NAME) ./cmd/gateway
+	@mkdir -p $(BUILD_DIR)
+	$(GO) build $(GOFLAGS) -o $(BUILD_DIR)/gateway ./cmd/gateway
+	$(GO) build $(GOFLAGS) -o $(BUILD_DIR)/svc-user ./cmd/svc-user
 
 # Run gateway
 run:
@@ -41,7 +45,7 @@ deps:
 
 # Clean build artifacts
 clean:
-	rm -rf bin/ logs/
+	rm -rf $(BUILD_DIR)/ logs/
 
 # Database migrations (golang-migrate)
 migrate-up:

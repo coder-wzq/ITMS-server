@@ -29,6 +29,7 @@ logs/
 /resources/
 
 # Build outputs
+/build/
 /bin/
 /gateway
 .claude/

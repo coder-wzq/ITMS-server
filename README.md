@@ -69,25 +69,33 @@ cp deploy/docker/.env.example .env
 # 编辑 .env 修改 JWT_SECRET 等敏感配置
 ```
 
-### 4. 启动网关
+### 4. 编译
 
 ```bash
-make run
-# 或
-go run ./cmd/gateway -config deploy/configs/config.dev.yaml
+make build
+# 生成 build/gateway + build/svc-user
 ```
 
-### 5. 验证
+### 5. 启动服务
 
 ```bash
-# 健康检查
-curl http://localhost:8080/health
-# → {"code":"00000","message":"ok","data":{"status":"healthy"}}
+# 先启动微服务
+./build/svc-user -config services/svc-user/etc/svc-user.yaml &
 
-# 登录（默认账号）
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
+# 再启动网关
+./build/gateway -config deploy/configs/config.dev.yaml
+```
+
+### 6. 验证
+
+```bash
+# 网关健康检查
+curl http://localhost:8080/health
+# → {"code":0,"message":"success","data":{"status":"healthy"}}
+
+# svc-user 健康检查（通过网关代理）
+curl http://localhost:8080/api/user/health
+# → {"code":0,"message":"success","data":{"status":"SERVING"}}
 ```
 
 ### 默认账号
@@ -102,8 +110,10 @@ curl -X POST http://localhost:8080/api/auth/login \
 
 ```
 ITMS-server/
+├── build/                      # 编译输出（gitignore）
 ├── cmd/                        # 入口程序
 │   ├── gateway/main.go         # API 网关入口
+│   ├── svc-user/main.go        # 用户管理服务入口
 │   └── integration_test/       # 集成测试
 ├── pkg/                        # 共享库
 │   ├── config/                 # YAML 配置加载 + 环境变量覆盖 + 热加载
@@ -397,9 +407,6 @@ docker compose up -d
 
 ---
 
-## 许可证
-
-内部项目，北京领为军融科技有限公司
 
 ---
 
